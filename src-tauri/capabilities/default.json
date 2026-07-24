@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability por defecto — permite usar los sidecars yt-dlp y ffmpeg, acceso al filesystem y diálogos",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-execute",
+    "shell:allow-kill",
+    "shell:allow-stdin-write",
+    "dialog:default",
+    "fs:default"
+  ]
+}

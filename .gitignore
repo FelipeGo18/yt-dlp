@@ -132,3 +132,18 @@ yt-dlp-plugins
 
 # Packages
 yt_dlp_ejs/
+
+# Node / Vite / Frontend
+node_modules/
+package-lock.json
+.pnpm-store/
+
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/*.exe
+
+# Logs & Cache
+*.log
+.eslintcache
+

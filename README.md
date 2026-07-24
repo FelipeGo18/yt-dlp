@@ -1,3 +1,5 @@
+Ahora, respondeme, como puedo ahora
+
 # yt-dlp Desktop (Tauri + React + Tailwind)
 
 Interfaz gráfica moderna, minimalista y de alto rendimiento para **yt-dlp**, construida con **Tauri v2**, **React**, **Tailwind CSS** y **shadcn/ui**.
