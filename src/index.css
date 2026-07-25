@@ -1,29 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* ── Party Rock — Light (:root) — tweakcn.com/themes/cmlqxbfu8000004joajt9gs64 ── */
   :root {
-    --background: #09090b;
-    --foreground: #fafafa;
-    --card: #111113;
-    --card-foreground: #fafafa;
-    --popover: #111113;
-    --popover-foreground: #fafafa;
-    --primary: #6366f1;
-    --primary-foreground: #ffffff;
-    --secondary: #27272a;
-    --secondary-foreground: #fafafa;
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-    --accent: #27272a;
-    --accent-foreground: #fafafa;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #6366f1;
-    --radius: 0.75rem;
+    --background: oklch(0.9559 0.0146 102.4588);
+    --foreground: oklch(0 0 0);
+    --card: oklch(0.9559 0.0146 102.4588);
+    --card-foreground: oklch(0 0 0);
+    --popover: oklch(1.0000 0 0);
+    --popover-foreground: oklch(0 0 0);
+    --primary: oklch(0.6268 0.2325 303.9004);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.7217 0.1767 305.5038);
+    --secondary-foreground: oklch(0 0 0);
+    --muted: oklch(0.9255 0.0160 102.8419);
+    --muted-foreground: oklch(0.5103 0 0);
+    --accent: oklch(0.6268 0.2325 303.9004);
+    --accent-foreground: oklch(1.0000 0 0);
+    --destructive: oklch(0.6730 0.2146 25.0397);
+    --destructive-foreground: oklch(1.0000 0 0);
+    --border: oklch(0 0 0);
+    --input: oklch(1.0000 0 0);
+    --ring: oklch(0.6268 0.2325 303.9004);
+    --radius: 2rem;
+    --shadow-2xs: 4px 4px 0px 0px hsl(0 0% 0% / 0.50);
+    --shadow-xs:  4px 4px 0px 0px hsl(0 0% 0% / 0.50);
+    --shadow-sm:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 1px 2px -1px hsl(0 0% 0% / 1.00);
+    --shadow:     4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 1px 2px -1px hsl(0 0% 0% / 1.00);
+    --shadow-md:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 2px 4px -1px hsl(0 0% 0% / 1.00);
+    --shadow-lg:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 4px 6px -1px hsl(0 0% 0% / 1.00);
+    --shadow-xl:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 8px 10px -1px hsl(0 0% 0% / 1.00);
+    --shadow-2xl: 4px 4px 0px 0px hsl(0 0% 0% / 2.50);
+  }
+
+  /* ── Party Rock — Dark (.dark) ── */
+  .dark {
+    --background: oklch(0.1822 0 0);
+    --foreground: oklch(0.9559 0.0146 102.4588);
+    --card: oklch(0.2393 0 0);
+    --card-foreground: oklch(0.9559 0.0146 102.4588);
+    --popover: oklch(0.2393 0 0);
+    --popover-foreground: oklch(0.9559 0.0146 102.4588);
+    --primary: oklch(0.6268 0.2325 303.9004);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.2850 0 0);
+    --secondary-foreground: oklch(0.9559 0.0146 102.4588);
+    --muted: oklch(0.2850 0 0);
+    --muted-foreground: oklch(0.7058 0 0);
+    --accent: oklch(0.6268 0.2325 303.9004);
+    --accent-foreground: oklch(1.0000 0 0);
+    --destructive: oklch(0.3767 0.1546 29.2339);
+    --destructive-foreground: oklch(1.0000 0 0);
+    --border: oklch(0.3211 0 0);
+    --input: oklch(0.2393 0 0);
+    --ring: oklch(0.6268 0.2325 303.9004);
+    --radius: 2rem;
+    --shadow-2xs: 4px 4px 0px 0px hsl(0 0% 0% / 0.50);
+    --shadow-xs:  4px 4px 0px 0px hsl(0 0% 0% / 0.50);
+    --shadow-sm:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 1px 2px -1px hsl(0 0% 0% / 1.00);
+    --shadow:     4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 1px 2px -1px hsl(0 0% 0% / 1.00);
+    --shadow-md:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 2px 4px -1px hsl(0 0% 0% / 1.00);
+    --shadow-lg:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 4px 6px -1px hsl(0 0% 0% / 1.00);
+    --shadow-xl:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 8px 10px -1px hsl(0 0% 0% / 1.00);
+    --shadow-2xl: 4px 4px 0px 0px hsl(0 0% 0% / 2.50);
   }
 
   * {
@@ -38,5 +81,63 @@
     user-select: none;
     margin: 0;
     padding: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+/* ── Party Rock Component Classes ──────────────────────────────── */
+@layer components {
+
+  /* Card: themed bg + border + solid offset shadow */
+  .card-party {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow 0.12s ease, transform 0.1s ease, background-color 0.2s ease;
+  }
+
+  /* Primary button: violet fill + neubrutalist solid shadow */
+  .btn-party {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    transition: all 0.12s ease;
+  }
+
+  .btn-party:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px hsl(0 0% 0% / 1.00);
+  }
+
+  .btn-party:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px hsl(0 0% 0% / 1.00);
+  }
+
+  .btn-party:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Ghost button */
+  .btn-ghost-party {
+    background: transparent;
+    color: var(--muted-foreground);
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: all 0.12s ease;
+  }
+
+  .btn-ghost-party:hover {
+    background-color: var(--muted);
+    color: var(--foreground);
+    border-color: var(--border);
+    box-shadow: 2px 2px 0px 0px hsl(0 0% 0% / 0.5);
   }
 }

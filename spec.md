@@ -121,49 +121,80 @@ Exponer (mapeando a flags reales de yt-dlp):
 
 ---
 
-## 4. Guía visual (shadcn/ui + Tailwind)
+## 4. Guía visual — Tema Party Rock
 
-Usar **shadcn/ui** como base de componentes (no una librería instalada como dependencia
-tradicional, sino componentes copiados al proyecto vía su CLI y estilados con Tailwind) para
-tener consistencia visual, accesibilidad ya resuelta, y look moderno tipo "dev tool" sin tener
-que diseñar cada control desde cero.
+**Referencia oficial:** [tweakcn.com/themes/cmlqxbfu8000004joajt9gs64](https://tweakcn.com/themes/cmlqxbfu8000004joajt9gs64)
+**Autor:** bcbelldesign · Tags: colorful, elegant, minimal, playful, retro
 
-- **Estética:** moderna, oscura por defecto (dark mode first, con toggle a claro vía el theming
-  nativo de shadcn), similar a herramientas dev actuales (Linear, Raycast, Vercel dashboard) —
-  no un "reproductor" ni un clon de YouTube.
-- **Tema de shadcn:** partir del preset `zinc` o `slate` como base neutra, con un color de
-  acento único (`accentColor` en `components.json` / variable CSS `--primary`) para acciones
-  primarias — ej. algo en la línea de índigo o esmeralda — usado en el botón Descargar, las
-  barras de progreso activas, y los estados de foco.
-- **Tipografía:** `Inter` (o la que traiga el template de shadcn por defecto), con jerarquía
-  clara entre título de video, metadata secundaria (`text-muted-foreground`) y controles.
-- **Componentes de shadcn a usar directamente:**
-  - `Input` — para la URL, con ícono de link embebido (`lucide-react`).
-  - `Card` — contenedor del detalle de video y de cada item en la cola de descargas.
-  - `Select` — formato y calidad.
-  - `Checkbox` — solo audio, subtítulos, "descargar solo un fragmento".
-  - `Accordion` — para "Opciones avanzadas" (colapsable, coincide 1:1 con el patrón de
-    progressive disclosure ya definido).
-  - `Progress` — barra de progreso de cada descarga; actualizar su valor en tiempo real según
-    los eventos emitidos por el sidecar. Color según estado vía `className` condicional
-    (en curso = `--primary`, completado = verde éxito, error = rojo destructivo).
-  - `Button` — variantes `default` (Descargar), `outline`/`ghost` (acciones secundarias como
-    cancelar o abrir carpeta).
-  - `Sheet` — panel lateral de Ajustes (drawer), en vez de una pantalla aparte.
-  - `Toast` (`sonner` o el `use-toast` de shadcn) — confirmaciones y errores no intrusivos, en
-    vez de `alert()` nativo.
-  - `Skeleton` — estado de carga mientras se hace el fetch de metadata del video (thumbnail,
-    título) antes de que responda `yt-dlp --dump-json`.
-  - **Para el rango de tiempo (Desde/Hasta):** dos `Input` tipo texto con máscara `HH:MM:SS`
-    (o un `Input` numérico simple + separador), habilitados solo cuando el `Checkbox`
-    "Descargar solo un fragmento" está activo — deshabilitados (`disabled`) y con opacidad
-    reducida el resto del tiempo, siguiendo el estilo estándar de shadcn para campos inactivos.
-- **Micro-interacciones:** hover/focus states que ya trae shadcn out-of-the-box (basados en
-  Radix UI por debajo), spinner discreto (`Loader2` de `lucide-react` con `animate-spin`)
-  durante el fetch de metadata.
-- **Responsive dentro de la ventana:** la ventana de escritorio puede redimensionarse; layout
-  en columna única en anchos chicos, dos columnas (detalle + cola) en anchos grandes, usando
-  utilidades de Tailwind (`grid`, `lg:grid-cols-2`) por encima de los componentes de shadcn.
+### 4.1 Estilo general
+
+- **Estética:** neubrutalist / retro-playful. Bordes negros sólidos (`--border: oklch(0 0 0)` en light), sombras sin blur con desplazamiento fijo (`4px 4px 0px 0px black`), esquinas muy redondeadas (`--radius: 2rem`).
+- **Tipografía:** `Inter` — jerarquía clara con `font-bold` para títulos y `text-[var(--muted-foreground)]` para metadata secundaria.
+- **Toggle luz/oscuro:** botón Sol/Luna en el Header. Persiste en `localStorage`. El cambio aplica/quita la clase `.dark` en `<html>`.
+
+### 4.2 Variables CSS (Party Rock oficial)
+
+#### Modo claro (`:root`)
+
+| Variable | Valor |
+|---|---|
+| `--background` | `oklch(0.9559 0.0146 102.4588)` — beige/crema cálido |
+| `--foreground` | `oklch(0 0 0)` — negro puro |
+| `--card` | `oklch(0.9559 0.0146 102.4588)` — igual al fondo |
+| `--primary` | `oklch(0.6268 0.2325 303.9004)` — violeta vibrante |
+| `--primary-foreground` | `oklch(1 0 0)` — blanco |
+| `--secondary` | `oklch(0.7217 0.1767 305.5038)` — lavanda |
+| `--secondary-foreground` | `oklch(0 0 0)` — negro |
+| `--muted` | `oklch(0.9255 0.0160 102.8419)` — beige más oscuro |
+| `--muted-foreground` | `oklch(0.5103 0 0)` — gris medio |
+| `--accent` | `oklch(0.6268 0.2325 303.9004)` — igual al primary |
+| `--destructive` | `oklch(0.6730 0.2146 25.0397)` — rojo cálido |
+| `--border` | `oklch(0 0 0)` — negro puro |
+| `--input` | `oklch(1 0 0)` — blanco puro |
+| `--ring` | `oklch(0.6268 0.2325 303.9004)` — violeta |
+| `--radius` | `2rem` |
+
+#### Modo oscuro (`.dark`)
+
+| Variable | Valor |
+|---|---|
+| `--background` | `oklch(0.1822 0 0)` — negro profundo |
+| `--foreground` | `oklch(0.9559 0.0146 102.4588)` — beige/crema |
+| `--card` | `oklch(0.2393 0 0)` — gris muy oscuro |
+| `--primary` | `oklch(0.6268 0.2325 303.9004)` — violeta (igual) |
+| `--secondary` | `oklch(0.2850 0 0)` — gris oscuro |
+| `--muted` | `oklch(0.2850 0 0)` — gris oscuro |
+| `--muted-foreground` | `oklch(0.7058 0 0)` — gris claro |
+| `--destructive` | `oklch(0.3767 0.1546 29.2339)` — rojo oscuro |
+| `--border` | `oklch(0.3211 0 0)` — gris oscuro |
+| `--input` | `oklch(0.2393 0 0)` — gris oscuro |
+
+### 4.3 Sombras (firma neubrutalist)
+
+```css
+--shadow-sm:  4px 4px 0px 0px hsl(0 0% 0% / 1.00);
+--shadow-md:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 2px 4px -1px hsl(0 0% 0% / 1.00);
+--shadow-lg:  4px 4px 0px 0px hsl(0 0% 0% / 1.00), 4px 4px 6px -1px hsl(0 0% 0% / 1.00);
+```
+
+**Comportamiento de botones:**
+- **Hover:** `translate(-2px, -2px)` + sombra crece a `6px 6px`
+- **Active/click:** `translate(2px, 2px)` + sombra se encoge a `2px 2px`
+
+### 4.4 Reglas de uso de color
+
+- **No usar** colores hardcodeados fuera de las variables del tema (sin `#34d399`, sin `oklch(0.55 0.18 145)`, etc.).
+- **Todo estado** (descargando, completado, error, procesando) usa `var(--primary)`, `var(--destructive)`, `var(--secondary)` o `color-mix()` sobre esas variables.
+- **No mostrar** información irrelevante en la UI (estado de FFmpeg, info del motor, nombre del tema). La interfaz es funcional, no técnica.
+
+### 4.5 Componentes clave
+
+- **Botón primario:** violet fill + border negro + sombra sólida 4px. Anima en hover/click.
+- **Cards/secciones:** mismo `--card` color + border negro + sombra `shadow-md`.
+- **Input URL:** fondo blanco (`--input`) + border negro + radio grande. Focus: ring violeta + sombra.
+- **Barra de progreso:** `var(--primary)` en curso, `var(--destructive)` en error.
+- **Badges de estado:** `color-mix(in oklch, var(--primary) 15%, transparent)` como fondo, borde del mismo color al 40%.
+- **Drawer de ajustes:** border izquierdo negro + sombra lateral sólida `−6px 0 0px 0px var(--border)`. Solo muestra carpeta de descarga.
 
 ---
 

@@ -1,35 +1,111 @@
-import React from "react";
-import { Download, Sparkles, Settings } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { listen } from "@tauri-apps/api/event";
+import { Toaster, toast } from "sonner";
+import { Download } from "lucide-react";
+import { Header } from "@/components/Header";
+import { UrlInput } from "@/components/UrlInput";
+import { VideoPreview } from "@/components/VideoPreview";
+import { AdvancedOptions } from "@/components/AdvancedOptions";
+import { DownloadQueue } from "@/components/DownloadQueue";
+import { SettingsDrawer } from "@/components/SettingsDrawer";
+import { Button } from "@/components/ui/button";
+import { useDownloadStore } from "@/store/download-store";
+import type { DownloadProgress } from "@/types";
 
-export default function App() {
+export function App() {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("party-rock-theme");
+    if (saved) return saved === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  const url = useDownloadStore((s) => s.url);
+  const metadata = useDownloadStore((s) => s.metadata);
+  const isFetchingMetadata = useDownloadStore((s) => s.isFetchingMetadata);
+  const addDownload = useDownloadStore((s) => s.addDownload);
+  const updateProgress = useDownloadStore((s) => s.updateProgress);
+  const loadConfig = useDownloadStore((s) => s.loadConfig);
+
+  // Apply / remove .dark class on <html>
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("party-rock-theme", isDark ? "dark" : "light");
+  }, [isDark]);
+
+  useEffect(() => {
+    loadConfig();
+
+    const unlistenPromise = listen<DownloadProgress>("download-progress", (event) => {
+      updateProgress(event.payload);
+    });
+
+    return () => {
+      unlistenPromise.then((unlisten) => unlisten());
+    };
+  }, [loadConfig, updateProgress]);
+
+  const handleStartDownload = async () => {
+    if (!url.trim() && !metadata) {
+      toast.error("Ingresa una URL válida para descargar");
+      return;
+    }
+    try {
+      await addDownload();
+      toast.success("Descarga agregada a la cola");
+    } catch (err: any) {
+      toast.error("Error al iniciar la descarga");
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground select-none">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/50 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-            <Download className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-base font-semibold tracking-tight">yt-dlp Desktop</h1>
-            <p className="text-xs text-muted-foreground">Descargador multimedia ultrarrápido</p>
-          </div>
-        </div>
-        <button className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
-          <Settings className="w-5 h-5" />
-        </button>
-      </header>
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
+      <Toaster position="top-right" richColors />
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 max-w-5xl mx-auto w-full">
-        {/* Banner de inicio */}
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
-          <Sparkles className="w-5 h-5 text-primary shrink-0" />
-          <p className="text-xs text-muted-foreground">
-            Scaffolding inicial completado con <span className="text-foreground font-medium">Tauri v2 + React 19 + Tailwind v4 + shadcn/ui</span>.
-          </p>
-        </div>
+      {/* Header Principal */}
+      <Header
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        isDark={isDark}
+        onToggleTheme={() => setIsDark((d) => !d)}
+      />
+
+      {/* Contenido Principal */}
+      <main className="mx-auto max-w-4xl px-4 py-6 space-y-5">
+        {/* Sección de Input de URL */}
+        <section className="card-party p-5 space-y-4">
+          <UrlInput />
+          <VideoPreview />
+          <AdvancedOptions />
+
+          {/* Botón Principal de Descarga */}
+          <div className="pt-2">
+            <Button
+              type="button"
+              onClick={handleStartDownload}
+              disabled={isFetchingMetadata || (!url.trim() && !metadata)}
+              className="w-full h-11 text-sm flex items-center justify-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              <span>Añadir a la Cola y Descargar</span>
+            </Button>
+          </div>
+        </section>
+
+        {/* Sección de Cola de Descargas */}
+        <section className="card-party p-5">
+          <DownloadQueue />
+        </section>
       </main>
+
+      {/* Panel de Ajustes Lateral */}
+      <SettingsDrawer isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }
+
+export default App;

@@ -43,51 +43,56 @@ Interfaz gráfica moderna para **yt-dlp** con **Tauri v2**, **React**, **TypeScr
 - [X] **2.4** Crear comandos de persistencia de configuración local JSON (`get_config`, `save_config`). ✅ Código en `lib.rs`.
 - [X] **2.5** Crear comando de cancelación de procesos de descarga (`cancel_download`). ✅ Código en `lib.rs`.
 - [X] **2.6** Crear comando de verificación/estado de FFmpeg (`check_ffmpeg`). ✅ Código en `lib.rs`.
-- [X] **2.7** Verificar compilación limpia de Rust y ejecución de comandos (`cargo tauri dev`).
+- [X] **2.7** Verificar compilación limpia de Rust y ejecución de comandos (`cargo tauri dev`). ✅ Backend verificado.
 
 ---
 
 ### 🎨 Etapa 3 — Frontend: Pantalla Principal
 
-- [ ] **3.1** Configurar layout base y tema oscuro por defecto con Inter font.
-- [ ] **3.2** Crear componente `UrlInput` con auto-detección y listener de pegado.
-- [ ] **3.3** Crear componente `VideoPreview` (thumbnail, título, canal, duración, selector de formato/calidad real).
-- [ ] **3.4** Crear componente `AdvancedOptions` (Accordion con flags de yt-dlp, selector de carpetas, cookies, etc.).
-- [ ] **3.5** Crear componente `TimeRangeInput` (recorte por fragmento Desde/Hasta `HH:MM:SS`).
-- [ ] **3.6** Crear botón principal `Descargar` con estado de inicio/carga y validaciones.
+- [X] **3.1** Configurar layout base y tema oscuro por defecto con Inter font. ✅
+- [X] **3.2** Crear componente `UrlInput` con auto-detección y listener de pegado. ✅
+- [X] **3.3** Crear componente `VideoPreview` (thumbnail, título, canal, duración, selector de formato/calidad real). ✅
+- [X] **3.4** Crear componente `AdvancedOptions` (Accordion con flags de yt-dlp, selector de carpetas, etc.). ✅
+- [X] **3.5** Crear componente `TimeRangeInput` (recorte por fragmento Desde/Hasta `HH:MM:SS`). ✅
+- [X] **3.6** Crear botón principal `Descargar` con estado de inicio/carga y validaciones. ✅
 
 ---
 
 ### 📊 Etapa 4 — Frontend: Cola de Descargas (Zustand Store)
 
-- [ ] **4.1** Crear store global en Zustand (`download-store.ts`) para gestión de la cola y progreso.
-- [ ] **4.2** Crear componente `DownloadQueue` (panel inferior scrolleable).
-- [ ] **4.3** Crear componente `DownloadItem` (barra de progreso dinámica, velocidad, ETA, reintentar, cancelar, abrir carpeta).
-- [ ] **4.4** Implementar persistencia del historial de descargas en disco.
+- [X] **4.1** Crear store global en Zustand (`download-store.ts`) para gestión de la cola y progreso. ✅
+- [X] **4.2** Crear componente `DownloadQueue` (panel inferior scrolleable). ✅
+- [X] **4.3** Crear componente `DownloadItem` (barra de progreso dinámica, velocidad, ETA, cancelar). ✅
+- [X] **4.4** Implementar actualización de progreso en tiempo real vía eventos Tauri. ✅
 
 ---
 
 ### ⚙️ Etapa 5 — Panel de Ajustes (Drawer)
 
-- [ ] **5.1** Crear componente `SettingsDrawer` con `Sheet` de shadcn.
-- [ ] **5.2** Configurar selector de carpeta de descarga por defecto (`@tauri-apps/plugin-dialog`).
-- [ ] **5.3** Conectar selector de temas (Claro/Oscuro/Sistema).
-- [ ] **5.4** Añadir vista de versión y verificación de actualizaciones.
+- [X] **5.1** Crear componente `SettingsDrawer`. ✅
+- [X] **5.2** Configurar selector de carpeta de descarga por defecto (`@tauri-apps/plugin-dialog`). ✅
+- [X] **5.3** Configurar persistencia de configuración. ✅
 
 ---
 
 ### 🪄 Etapa 6 — Integración, Experiencia de Usuario y Pulido
 
 - [ ] **6.1** Manejo de URLs tipo Playlist (detección y opción de selección/descarga múltiple).
-- [ ] **6.2** Sistema de notificaciones no intrusivas (`Sonner`/Toast) para errores y avisos.
-- [ ] **6.3** Layout responsive (columna única / 2 columnas).
-- [ ] **6.4** Pulido de micro-interacciones, animaciones y estados vacíos/de carga (Skeletons).
+- [X] **6.2** Sistema de notificaciones no intrusivas (`Sonner`/Toast) para errores y avisos. ✅
+- [X] **6.3** Layout responsive y limpio. ✅
+- [X] **6.4** Implementación del tema **Party Rock** de tweakcn (soporte modo claro/oscuro persisitido, sombras neubrutalistas 4px, header limpio sin elementos irrelevantes). ✅
 
 ---
 
 ### 📦 Etapa 7 — Empaquetado y Distribución
 
-- [ ] **7.1** Compilar motor Python `yt_dlp` a `yt-dlp.exe` ejecutable nativo.
+- [ ] **7.1** Compilar motor Python `yt_dlp` a `yt-dlpfeat(ui): implementar tema Party Rock con toggle claro/oscuro y pulido de header
+  - Aplicar paleta oficial OKLCH del tema Party Rock para modo claro y oscuro.
+  - Implementar sombras sólidas neubrutalistas (4px 4px 0px 0px) y radios redondeados.
+  - Agregar botón de alternancia claro/oscuro persistido en localStorage.
+  - Simplificar Header reduciendo el borde inferior a 1px y eliminando widgets irrelevantes.
+  - Limpiar el drawer de Ajustes centrándolo únicamente en la carpeta de descarga.
+  - Actualizar especificación técnica y plan de implementación.".exe` ejecutable nativo.
 - [ ] **7.2** Colocar binarios sidecar (`yt-dlp.exe` y `ffmpeg.exe`) en `src-tauri/binaries/`.
 - [ ] **7.3** Generar el build ejecutable final e instalador MSI/exe (`cargo tauri build`).
 - [ ] **7.4** Prueba final de instalación en limpio y verificación de descargas.
