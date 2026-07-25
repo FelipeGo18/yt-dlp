@@ -11,6 +11,9 @@ const buttonVariants = cva(
         default:
           // Violet fill + solid black neubrutalist shadow
           "bg-[var(--primary)] text-[var(--primary-foreground)] border border-[var(--border)] rounded-[var(--radius)] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none",
+        flat:
+          // Flat violet button without shadow (e.g. Analizar, Set Goal)
+          "bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full hover:opacity-90 active:scale-95 transition-all shadow-none border-none disabled:opacity-50",
         destructive:
           "bg-[var(--destructive)] text-[var(--destructive-foreground)] border border-[var(--border)] rounded-[var(--radius)] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50",
         outline:

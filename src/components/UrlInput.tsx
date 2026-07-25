@@ -88,10 +88,11 @@ export const UrlInput: React.FC = () => {
 
           <Button
             type="button"
+            variant="flat"
             size="sm"
             onClick={() => fetchMetadata()}
             disabled={!url.trim() || isFetchingMetadata}
-            className="h-7 px-3 text-xs gap-1"
+            className="h-7 px-3 text-xs gap-1 rounded-full shadow-none border-none"
           >
             {isFetchingMetadata ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

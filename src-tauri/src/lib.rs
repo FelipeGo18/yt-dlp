@@ -52,6 +52,7 @@ pub struct DownloadRequest {
     pub format_id: Option<String>,
     pub output_dir: String,
     pub audio_only: bool,
+    pub download_mode: Option<String>, // "merged" | "audio_only" | "video_only" | "separate"
     pub embed_subs: bool,
     pub time_from: Option<String>, // HH:MM:SS
     pub time_to: Option<String>,   // HH:MM:SS
@@ -99,6 +100,55 @@ fn ytdlp_bin(app: &AppHandle) -> tauri_plugin_shell::process::Command {
 
 fn ffmpeg_bin(app: &AppHandle) -> tauri_plugin_shell::process::Command {
     app.shell().sidecar("ffmpeg").unwrap()
+}
+
+fn find_ffmpeg_path(app: &AppHandle) -> Option<std::path::PathBuf> {
+    // 1. Directorio del ejecutable principal (dev & prod binaries location)
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            let candidates = [
+                exe_dir.join("ffmpeg-x86_64-pc-windows-msvc.exe"),
+                exe_dir.join("ffmpeg.exe"),
+            ];
+            for c in candidates {
+                if c.exists() {
+                    return Some(c);
+                }
+            }
+        }
+    }
+
+    // 2. Directorio de recursos de Tauri
+    if let Ok(res_dir) = app.path().resource_dir() {
+        let candidates = [
+            res_dir.join("ffmpeg-x86_64-pc-windows-msvc.exe"),
+            res_dir.join("ffmpeg.exe"),
+            res_dir.join("binaries").join("ffmpeg-x86_64-pc-windows-msvc.exe"),
+            res_dir.join("binaries").join("ffmpeg.exe"),
+        ];
+        for c in candidates {
+            if c.exists() {
+                return Some(c);
+            }
+        }
+    }
+
+    // 3. Ruta dev en la raíz del proyecto (src-tauri/binaries/...)
+    let proj_dev = std::path::PathBuf::from("src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe");
+    if proj_dev.exists() {
+        if let Ok(abs) = std::fs::canonicalize(&proj_dev) {
+            return Some(abs);
+        }
+    }
+
+    let proj_dev2 = std::path::PathBuf::from("binaries/ffmpeg-x86_64-pc-windows-msvc.exe");
+    if proj_dev2.exists() {
+        if let Ok(abs) = std::fs::canonicalize(&proj_dev2) {
+            return Some(abs);
+        }
+    }
+
+    None
 }
 
 // ─── Módulo de Comandos Tauri ──────────────────────────────────────────────────
@@ -184,27 +234,58 @@ pub mod commands {
         state: State<'_, ActiveDownloads>,
         request: DownloadRequest,
     ) -> Result<(), String> {
-        let format = request.format_id.as_deref().unwrap_or("bestvideo+bestaudio/best");
+        let mode = request.download_mode.as_deref().unwrap_or(if request.audio_only { "audio_only" } else { "merged" });
         let output_tmpl = format!("{}/%(title)s.%(ext)s", request.output_dir);
 
         let mut args: Vec<String> = vec![
             "--newline".to_string(),
             "--progress".to_string(),
             "--no-warnings".to_string(),
-            "-f".to_string(), format.to_string(),
-            "--merge-output-format".to_string(), "mp4".to_string(),
             "-o".to_string(), output_tmpl,
         ];
 
-        if let Ok(ffmpeg_path) = app.shell().sidecar("ffmpeg")
-            .map(|_| app.path().resource_dir().unwrap().join("ffmpeg-x86_64-pc-windows-msvc.exe"))
-        {
+        if let Some(ffmpeg_path) = find_ffmpeg_path(&app) {
             args.push("--ffmpeg-location".to_string());
             args.push(ffmpeg_path.to_string_lossy().to_string());
         }
 
-        if request.audio_only {
-            args.extend(["--extract-audio".to_string(), "--audio-format".to_string(), "mp3".to_string()]);
+        match mode {
+            "audio_only" => {
+                let format = request.format_id.as_deref().unwrap_or("bestaudio/best");
+                args.extend([
+                    "-f".to_string(), format.to_string(),
+                    "--extract-audio".to_string(),
+                    "--audio-format".to_string(), "mp3".to_string(),
+                ]);
+            }
+            "video_only" => {
+                let format = request.format_id.as_deref().unwrap_or("bestvideo/best");
+                args.extend([
+                    "-f".to_string(), format.to_string(),
+                ]);
+            }
+            "separate" => {
+                let format = if let Some(fid) = &request.format_id {
+                    if fid != "best" && !fid.contains('+') {
+                        format!("{},bestaudio", fid)
+                    } else {
+                        "bestvideo,bestaudio".to_string()
+                    }
+                } else {
+                    "bestvideo,bestaudio".to_string()
+                };
+                args.extend([
+                    "-f".to_string(), format,
+                ]);
+            }
+            _ => {
+                // "merged" (video + audio unidos - por defecto)
+                let format = request.format_id.as_deref().unwrap_or("bestvideo+bestaudio/best");
+                args.extend([
+                    "-f".to_string(), format.to_string(),
+                    "--merge-output-format".to_string(), "mp4".to_string(),
+                ]);
+            }
         }
         if request.embed_subs {
             args.extend(["--embed-subs".to_string(), "--sub-langs".to_string(), "all".to_string()]);

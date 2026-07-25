@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { VideoMetadata, DownloadItem, AppConfig, DownloadProgress } from "@/types";
+import type { VideoMetadata, DownloadItem, AppConfig, DownloadProgress, DownloadMode } from "@/types";
 import { tauriService } from "@/services/tauri";
 
 interface DownloadState {
@@ -12,6 +12,7 @@ interface DownloadState {
   // Opciones de descarga actual
   selectedFormatId: string;
   audioOnly: boolean;
+  downloadMode: DownloadMode;
   embedSubs: boolean;
   outputDir: string;
   timeFrom: string;
@@ -27,6 +28,7 @@ interface DownloadState {
   setUrl: (url: string) => void;
   setSelectedFormatId: (formatId: string) => void;
   setAudioOnly: (val: boolean) => void;
+  setDownloadMode: (mode: DownloadMode) => void;
   setEmbedSubs: (val: boolean) => void;
   setOutputDir: (dir: string) => void;
   setTimeFrom: (val: string) => void;
@@ -38,6 +40,8 @@ interface DownloadState {
   // Acciones Descarga
   addDownload: () => Promise<void>;
   cancelDownload: (id: string) => Promise<void>;
+  removeDownloadItem: (id: string) => Promise<void>;
+  clearQueue: () => Promise<void>;
   updateProgress: (progress: DownloadProgress) => void;
 
   // Configuración
@@ -54,6 +58,7 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
 
   selectedFormatId: "best",
   audioOnly: false,
+  downloadMode: "merged",
   embedSubs: false,
   outputDir: "",
   timeFrom: "",
@@ -64,7 +69,8 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
 
   setUrl: (url) => set({ url }),
   setSelectedFormatId: (selectedFormatId) => set({ selectedFormatId }),
-  setAudioOnly: (audioOnly) => set({ audioOnly }),
+  setAudioOnly: (audioOnly) => set({ audioOnly, downloadMode: audioOnly ? "audio_only" : "merged" }),
+  setDownloadMode: (downloadMode) => set({ downloadMode, audioOnly: downloadMode === "audio_only" }),
   setEmbedSubs: (embedSubs) => set({ embedSubs }),
   setOutputDir: (outputDir) => set({ outputDir }),
   setTimeFrom: (timeFrom) => set({ timeFrom }),
@@ -93,7 +99,7 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
   clearMetadata: () => set({ metadata: null, metadataError: null, url: "", timeFrom: "", timeTo: "" }),
 
   addDownload: async () => {
-    const { url, metadata, selectedFormatId, audioOnly, embedSubs, outputDir, config, timeFrom, timeTo } = get();
+    const { url, metadata, selectedFormatId, audioOnly, downloadMode, embedSubs, outputDir, config, timeFrom, timeTo } = get();
     if (!url && !metadata) return;
 
     const targetUrl = metadata?.webpage_url || url;
@@ -110,6 +116,7 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
       format_id: selectedFormatId,
       output_dir: finalDir,
       audio_only: audioOnly,
+      download_mode: downloadMode,
       embed_subs: embedSubs,
       progress: 0,
       status: "queued",
@@ -125,6 +132,7 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
         format_id: selectedFormatId === "best" ? undefined : selectedFormatId,
         output_dir: finalDir,
         audio_only: audioOnly,
+        download_mode: downloadMode,
         embed_subs: embedSubs,
         time_from: timeFrom.trim() || undefined,
         time_to: timeTo.trim() || undefined,
@@ -151,6 +159,32 @@ export const useDownloadStore = create<DownloadState>((set, get) => ({
     } catch (err) {
       console.error("Error al cancelar:", err);
     }
+  },
+
+  removeDownloadItem: async (id) => {
+    const item = get().queue.find((i) => i.id === id);
+    if (item && (item.status === "downloading" || item.status === "queued" || item.status === "merging")) {
+      try {
+        await tauriService.cancelDownload(id);
+      } catch (e) {
+        // Ignorar si ya terminó
+      }
+    }
+    set((state) => ({ queue: state.queue.filter((i) => i.id !== id) }));
+  },
+
+  clearQueue: async () => {
+    const { queue } = get();
+    for (const item of queue) {
+      if (item.status === "downloading" || item.status === "queued" || item.status === "merging") {
+        try {
+          await tauriService.cancelDownload(item.id);
+        } catch (e) {
+          // Ignorar
+        }
+      }
+    }
+    set({ queue: [] });
   },
 
   updateProgress: (progress) => {

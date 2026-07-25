@@ -1,4 +1,4 @@
-efffhjgl ie dieese
+effotslsts oasmmi noó a tprapnt buénbtamjabo n lconones  boo odo nfhjgl ie dieese
 
 # Proyecto yt-dlp Desktop — Reglas del Agente
 

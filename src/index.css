@@ -83,6 +83,14 @@
     padding: 0;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
+
+  /* Input fields must allow text selection, show text cursor and visible caret */
+  input, textarea {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    cursor: text !important;
+    caret-color: var(--primary) !important;
+  }
 }
 
 /* ── Party Rock Component Classes ──────────────────────────────── */

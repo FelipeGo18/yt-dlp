@@ -1,5 +1,5 @@
 import React from "react";
-import { Download, CheckCircle2, XCircle, Ban, RefreshCw } from "lucide-react";
+import { Download, CheckCircle2, XCircle, Ban, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DownloadItem as DownloadItemType } from "@/types";
 import { useDownloadStore } from "@/store/download-store";
@@ -9,7 +9,7 @@ interface DownloadItemProps {
 }
 
 export const DownloadItem: React.FC<DownloadItemProps> = ({ item }) => {
-  const cancelDownload = useDownloadStore((s) => s.cancelDownload);
+  const removeDownloadItem = useDownloadStore((s) => s.removeDownloadItem);
 
   const getStatusBadge = () => {
     switch (item.status) {
@@ -151,19 +151,17 @@ export const DownloadItem: React.FC<DownloadItemProps> = ({ item }) => {
           )}
         </div>
 
-        {/* Cancelar */}
-        {(item.status === "downloading" || item.status === "queued" || item.status === "merging") && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => cancelDownload(item.id)}
-            className="h-7 w-7 rounded-xl"
-            title="Cancelar descarga"
-          >
-            <XCircle className="h-4 w-4" />
-          </Button>
-        )}
+        {/* Botón X para eliminar el elemento de la cola */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => removeDownloadItem(item.id)}
+          className="h-7 w-7 rounded-xl shrink-0"
+          title="Eliminar de la cola"
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

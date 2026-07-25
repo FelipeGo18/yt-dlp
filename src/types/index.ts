@@ -10,6 +10,8 @@ export interface VideoFormat {
   tbr?: number;
 }
 
+export type DownloadMode = "merged" | "audio_only" | "video_only" | "separate";
+
 export interface VideoMetadata {
   id: string;
   title: string;
@@ -18,7 +20,7 @@ export interface VideoMetadata {
   thumbnail?: string;
   webpage_url: string;
   formats: VideoFormat[];
-  is_playlist: bool;
+  is_playlist: boolean;
   playlist_count?: number;
 }
 
@@ -28,6 +30,7 @@ export interface DownloadRequest {
   format_id?: string;
   output_dir: string;
   audio_only: boolean;
+  download_mode?: DownloadMode;
   embed_subs: boolean;
   time_from?: string;
   time_to?: string;
@@ -52,6 +55,7 @@ export interface DownloadItem {
   format_id?: string;
   output_dir: string;
   audio_only: boolean;
+  download_mode?: DownloadMode;
   embed_subs: boolean;
   progress: number;
   status: "queued" | "downloading" | "merging" | "finished" | "error" | "cancelled";

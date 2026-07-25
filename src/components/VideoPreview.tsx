@@ -1,6 +1,5 @@
 import React from "react";
-import { Clock, User, Film, Check } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Clock, User, Film, Check, X } from "lucide-react";
 import { useDownloadStore } from "@/store/download-store";
 
 function formatDuration(seconds?: number): string {
@@ -27,6 +26,7 @@ export const VideoPreview: React.FC = () => {
   const metadata = useDownloadStore((s) => s.metadata);
   const selectedFormatId = useDownloadStore((s) => s.selectedFormatId);
   const setSelectedFormatId = useDownloadStore((s) => s.setSelectedFormatId);
+  const clearMetadata = useDownloadStore((s) => s.clearMetadata);
 
   if (!metadata) return null;
 
@@ -35,10 +35,30 @@ export const VideoPreview: React.FC = () => {
   );
 
   return (
-    <Card className="overflow-hidden border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition-all">
-      <div className="flex flex-col md:flex-row gap-4">
+    <div
+      className="relative overflow-hidden rounded-2xl p-4 transition-all"
+      style={{
+        background: "var(--muted)",
+        border: "1px solid var(--border)",
+        boxShadow: "2px 2px 0px 0px rgba(0,0,0,0.5)",
+      }}
+    >
+      {/* Botón de quitar video (X) */}
+      <button
+        type="button"
+        onClick={clearMetadata}
+        className="absolute top-3 right-3 p-1.5 rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)] transition-all cursor-pointer z-10"
+        title="Quitar video cargado"
+      >
+        <X className="h-4 w-4" />
+      </button>
+
+      <div className="flex flex-col md:flex-row gap-4 pr-6">
         {/* Thumbnail */}
-        <div className="relative shrink-0 overflow-hidden rounded-xl bg-[var(--background)] aspect-video md:w-52 border border-[var(--border)]">
+        <div
+          className="relative shrink-0 overflow-hidden rounded-xl bg-[var(--background)] aspect-video md:w-52"
+          style={{ border: "1px solid var(--border)" }}
+        >
           {metadata.thumbnail ? (
             <img
               src={metadata.thumbnail}
@@ -55,11 +75,11 @@ export const VideoPreview: React.FC = () => {
         {/* Detalles & Selección de Formato */}
         <div className="flex flex-1 flex-col justify-between space-y-3">
           <div>
-            <h2 className="line-clamp-2 text-xs font-semibold text-[var(--foreground)] leading-relaxed">
+            <h2 className="line-clamp-2 text-xs font-bold text-[var(--foreground)] leading-relaxed">
               {metadata.title}
             </h2>
 
-            <div className="mt-1.5 flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
+            <div className="mt-1.5 flex items-center gap-3 text-xs text-[var(--muted-foreground)] font-medium">
               {metadata.uploader && (
                 <span className="flex items-center gap-1">
                   <User className="h-3 w-3" />
@@ -77,15 +97,15 @@ export const VideoPreview: React.FC = () => {
 
           {/* Selector de Calidad / Formatos */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-medium text-[var(--muted-foreground)]">Formato y Calidad</label>
+            <label className="text-[11px] font-semibold text-[var(--muted-foreground)]">Formato y Calidad</label>
             <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => setSelectedFormatId("best")}
-                className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                className={`flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer ${
                   selectedFormatId === "best"
-                    ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm"
-                    : "bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--accent)]"
+                    ? "bg-[var(--primary)] text-[var(--primary-foreground)] border border-[var(--border)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                    : "bg-[var(--input)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-85"
                 }`}
               >
                 {selectedFormatId === "best" && <Check className="h-3 w-3" />}
@@ -97,10 +117,10 @@ export const VideoPreview: React.FC = () => {
                   key={f.format_id}
                   type="button"
                   onClick={() => setSelectedFormatId(f.format_id)}
-                  className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                  className={`flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-semibold transition-all cursor-pointer ${
                     selectedFormatId === f.format_id
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm"
-                      : "bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--accent)]"
+                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] border border-[var(--border)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      : "bg-[var(--input)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-85"
                   }`}
                 >
                   {selectedFormatId === f.format_id && <Check className="h-3 w-3" />}
@@ -112,6 +132,6 @@ export const VideoPreview: React.FC = () => {
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };

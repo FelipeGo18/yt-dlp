@@ -27,7 +27,7 @@ export function App() {
   const updateProgress = useDownloadStore((s) => s.updateProgress);
   const loadConfig = useDownloadStore((s) => s.loadConfig);
 
-  // Apply / remove .dark class on <html>
+  // Aplicar / quitar clase .dark en el root HTML
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
@@ -50,22 +50,41 @@ export function App() {
     };
   }, [loadConfig, updateProgress]);
 
+  const hasVideoToDownload = Boolean(url.trim() || metadata);
+  const isDownloadDisabled = isFetchingMetadata || !hasVideoToDownload;
+
   const handleStartDownload = async () => {
-    if (!url.trim() && !metadata) {
-      toast.error("Ingresa una URL válida para descargar");
+    if (!hasVideoToDownload) {
+      toast("Ingresa una URL o analiza un video primero");
       return;
     }
     try {
       await addDownload();
-      toast.success("Descarga agregada a la cola");
+      toast("Descarga agregada a la cola", {
+        description: metadata?.title || url.trim(),
+      });
     } catch (err: any) {
-      toast.error("Error al iniciar la descarga");
+      toast("Error al iniciar la descarga");
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
-      <Toaster position="top-right" richColors />
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased flex flex-col overflow-y-auto">
+      {/* Alertas personalizadas estilo Party Rock (sin color verde genérico) */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "var(--card)",
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
+            boxShadow: "3px 3px 0px 0px var(--border)",
+            borderRadius: "1.25rem",
+            fontWeight: 600,
+            fontSize: "0.8125rem",
+          },
+        }}
+      />
 
       {/* Header Principal */}
       <Header
@@ -75,7 +94,7 @@ export function App() {
       />
 
       {/* Contenido Principal */}
-      <main className="mx-auto max-w-4xl px-4 py-6 space-y-5">
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-6 space-y-5">
         {/* Sección de Input de URL */}
         <section className="card-party p-5 space-y-4">
           <UrlInput />
@@ -87,11 +106,13 @@ export function App() {
             <Button
               type="button"
               onClick={handleStartDownload}
-              disabled={isFetchingMetadata || (!url.trim() && !metadata)}
+              disabled={isDownloadDisabled}
               className="w-full h-11 text-sm flex items-center justify-center gap-2"
             >
               <Download className="h-4 w-4" />
-              <span>Añadir a la Cola y Descargar</span>
+              <span>
+                {metadata ? "Descargar video preparado" : "Añadir a la cola y Descargar"}
+              </span>
             </Button>
           </div>
         </section>
